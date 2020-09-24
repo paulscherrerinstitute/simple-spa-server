@@ -30,7 +30,7 @@ jobs:
         name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=paulscherrerinstitute/simple-spa-server
+          DOCKER_IMAGE=ghcr.io/paulscherrerinstitute/simple-spa-server
           VERSION=noop
           if [ "${{ github.event_name }}" = "schedule" ]; then
             VERSION=nightly
