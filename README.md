@@ -74,35 +74,33 @@ This works especially well inside docker containers.
 
 ## Using with docker
 
-### Step 1: Build docker image for simple-spa-server
+### Step 1: Get the docker image for simple-spa-server
 
-If you have access to the PSI internal docker registry, you can skip to step 3 and just use the image `docker.psi.ch:5000/simple-spa-server`.
-
-Otherwise you need to build the image locally:
+Download the latest version of the docker image from GitHub container registry:
 
 ```sh
-docker build . -t simple-spa-server
+docker pull ghcr.io/paulscherrerinstitute/simple-spa-server
 ```
 
-The above command will build `simple-spa-server` inside a container and just keep the resulting static binary in a minimal image. That docker image will be tagged as simple-spa-server for you locally, so you can use this name instead of the image ID (hash).
+The above command will download the docker image for `simple-spa-server` from the GitHub container registry and make it available for you locally.
 
 Verify that it worked by trying to run the docker image:
 
 ```sh
-docker run --rm -i -t simple-spa-server
+docker run --rm -i -t ghcr.io/paulscherrerinstitute/simple-spa-server
 ```
 
 Now you **should see an error message**, that it cannot open `/data/docroot/index.html`. (Because that file does not exist inside the container.) That means, that the server did run successfully, so your image is ready for use.
 
 ### Step 2: Run the SPA through the docker image
 
-Next, let's use this docker image we just built to run the SPA. For this example we'll assume, the complete SPA exists all bundled up and ready to be served from `$PWD/dist`.
+Next, let's use this docker image we just built to run the SPA. For this example we'll assume, the complete SPA exists all bundled up and ready to be served from `$PWD/dist`. Run the container, mounting `$PWD/dist` into `/data/docroot`, and exposing its port `8080` on your port `3456`:
 
 ```sh
-docker run --rm -i -t -v $PWD/dist:/data/docroot -e SSS_APP_NAME="example SPA server" simple-spa-server
+docker run --rm -i -t -v $PWD/dist:/data/docroot -p 3456:8080 -e SSS_APP_NAME="example SPA server" ghcr.io/paulscherrerinstitute/simple-spa-server
 ```
 
-You should see a message saying "example SPA server starting up...".
+You should see a message saying "example SPA server starting up...". Verify you can access the app by opening http://localhost:3456/ in your browser.
 
 ### Step 3: Build docker image for the SPA
 
@@ -128,9 +126,7 @@ RUN npm run build
 # ------------------------------------------------------------
 # stage 2: run the ui
 
-# if you have access to PSI's private docker registry use this
-# FROM docker.psi.ch:5000/simple-spa-server
-FROM simple-spa-server
+FROM ghcr.io/paulscherrerinstitute/simple-spa-server
 
 ENV SSS_APP_NAME "Example SPA"
 
